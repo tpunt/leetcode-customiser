@@ -24,11 +24,6 @@
         "storage"
     ],
 
-    "options_ui": {
-        "page": "config.html",
-        "chrome_style": true
-    },
-
     "browser_action": {
         "default_popup": "config.html"
     }
