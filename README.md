@@ -1,6 +1,6 @@
-# leetcode-customiser
+# LeetCode Customiser
 
-This Chrome extension enables for the LeetCode website to be customised. This includes the following settings:
+This Chrome extension ([app store link](https://chrome.google.com/webstore/detail/leetcode-customiser/pcjpjebekdglngpoiamcilooibicjpmf)) enables for parts of the [LeetCode](https://leetcode.com) website to be customised. This includes the following settings:
 
 ![Configuration menu](docs/config-menu.png)
 
@@ -38,7 +38,7 @@ This shows/hides the locked questions:
 
 ### Show Result Count
 
-This displays a result count that is fixed in the bottom-left of the screen. This is handy to see a question count when filters have been added. For example, displaying all Todo questions, with all locked questions hidden, 
+This displays a result count that is fixed in the bottom-left of the screen. This is handy to see a question count when filters have been added. For example, displaying all Todo questions, with all locked questions hidden,
 
 ![Result Count](docs/result-count.png)
 
