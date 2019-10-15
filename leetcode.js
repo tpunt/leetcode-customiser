@@ -76,7 +76,7 @@ var options = {
     },
     toggleDifficulty = function (show) {
         var difficulties = document.querySelectorAll('.reactable-data > tr > td:nth-child(6)'),
-            difficulty = document.querySelector('.side-bar-list > li:nth-child(2) > span:nth-child(2)');
+            difficulty = document.querySelector('.side-bar-list > li:nth-child(2) > span:nth-child(2), [diff]');
 
         if (show) {
             for (var i = 0; i < difficulties.length; ++i) {
@@ -165,6 +165,7 @@ var options = {
 
 document.addEventListener('DOMContentLoaded', function (e) {
     var qa = document.getElementById('question-app'),
+        app = document.getElementById('app'),
         mo = new MutationObserver(qaEvent);
 
     if (qa !== null) {
@@ -174,6 +175,10 @@ document.addEventListener('DOMContentLoaded', function (e) {
         document.body.appendChild(resultCountNode);
     }
 
+    if (app !== null) {
+      mo.observe(app, {childList: true, subtree: true});
+    }
+    
     chrome.storage.sync.get('lc_options', (opts) => {
         if (opts['lc_options'] === undefined) {
             chrome.storage.sync.set({lc_options: opts});
