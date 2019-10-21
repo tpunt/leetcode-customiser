@@ -51,26 +51,27 @@ var options = {
     },
     toggleAcceptanceRate = function (show) {
         var acceptanceRates = document.querySelectorAll('.reactable-data > tr > td:nth-child(5)'),
-            totalAccepted = document.querySelector('.side-bar-list > li:nth-child(3) > span:nth-child(2)'),
-            totalSubmissions = document.querySelector('.side-bar-list > li:nth-child(4) > span:nth-child(2)');
+        rates = document.getElementsByClassName('css-jkjiwi');
 
         if (show) {
             for (var i = 0; i < acceptanceRates.length; ++i) {
                 acceptanceRates[i].style = '';
             }
 
-            if (totalAccepted !== null) {
-                totalAccepted.style = 'opacity: 100;';
-                totalSubmissions.style = 'opacity: 100;';
+            if (rates !== null) {
+              for(let i = 0; i < rates.length; i++) {
+                rates[i].style = 'opacity: 100;';
+              }
             }
         } else {
             for (var i = 0; i < acceptanceRates.length; ++i) {
                 acceptanceRates[i].style = 'opacity: 0;';
             }
 
-            if (totalAccepted !== null) {
-                totalAccepted.style = 'opacity: 0;';
-                totalSubmissions.style = 'opacity: 0;';
+            if (rates !== null) {
+              for(let i = 0; i < rates.length; i++) {
+                rates[i].style = 'opacity: 0;';
+              }
             }
         }
     },
