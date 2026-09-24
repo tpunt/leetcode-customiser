@@ -1,30 +1,26 @@
 {
     "name": "LeetCode Customiser",
     "description": "This extension enables for parts of the LeetCode website to be customised.",
-    "version": "0.2",
+    "version": "0.3",
 
     "author": "Thomas Punt",
 
-    "manifest_version": 2,
+    "manifest_version": 3,
 
     "content_scripts": [
         {
             "matches": ["https://leetcode.com/*"],
             "css": ["leetcode.css"],
             "js": ["leetcode.js"],
-            "run_at": "document_start",
-            "all_frames": true
+            "run_at": "document_start"
         }
     ],
 
     "permissions": [
-        "tabs",
-        "https://leetcode.com/*",
-        "activeTab",
         "storage"
     ],
 
-    "browser_action": {
+    "action": {
         "default_popup": "config.html"
     }
 }

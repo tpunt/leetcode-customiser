@@ -3,16 +3,31 @@
     <head>
         <title>LeetCode Customiser Extension</title>
         <style type="text/css">
+            :root {
+                color-scheme: light dark;
+                --background: #fff;
+                --foreground: #000;
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --background: #202124;
+                    --foreground: #e8eaed;
+                }
+            }
+
             body {
                 margin: 10px;
                 white-space: nowrap;
+                background-color: var(--background);
+                color: var(--foreground);
             }
 
             h1 {
                 font-size: 15px;
                 text-align: center;
                 padding-bottom: 0.5em;
-                border-bottom: 1px solid #000;
+                border-bottom: 1px solid var(--foreground);
             }
 
             #container > div {
@@ -27,22 +42,16 @@
         <h1>Configuration</h1>
         <div id="container">
             <div>
-                Show Announcement: <input id="announcement" type="checkbox" />
+                Show Difficulty: <input id="difficulty" type="checkbox" />
             </div>
             <div>
                 Show Acceptance Rate: <input id="acceptanceRate" type="checkbox" />
             </div>
             <div>
-                Show Difficulty: <input id="difficulty" type="checkbox" />
-            </div>
-            <div>
                 Show Locked Questions: <input id="lockedQuestions" type="checkbox" />
             </div>
             <div>
-                Show Result Count: <input id="resultCountNode" type="checkbox" />
-            </div>
-            <div>
-                Show Solved Difficulty Counts: <input id="solvedDifficultyCounts" type="checkbox" />
+                Show Constraints: <input id="constraints" type="checkbox" />
             </div>
         </div>
     </body>

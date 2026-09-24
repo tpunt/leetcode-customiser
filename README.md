@@ -6,44 +6,20 @@ This Chrome extension ([app store link](https://chrome.google.com/webstore/detai
 
 ## The Settings
 
-### Show Announcement
-
-This shows/hides the LeetCode announcement. The announcement can sometimes consume a lot of space on the website, which can be annoying.
-
-### Show Acceptance Rate
-
-This shows/hides the acceptance rate for all questions:
-
-![Acceptance rates](docs/acceptance-rates.png)
-
-As well as for a single question:
-
-![Acceptance rate](docs/acceptance-rate.png)
+Everything is hidden by default. Tick a setting in the extension's popup to show it again.
 
 ### Show Difficulty
 
-This shows/hides the difficulty for all questions:
+This shows/hides question difficulties everywhere they appear: on a question's page (including its Similar Questions), the problem list, the problem list drawer on a question's page, and study plans.
 
-![Difficulties](docs/difficulties.png)
+### Show Acceptance Rate
 
-As well as for a single question:
-
-![Difficulty](docs/difficulty.png)
+This shows/hides the acceptance rate in the problem lists, as well as the Accepted/Acceptance Rate stats below a question.
 
 ### Show Locked Questions
 
-This shows/hides the locked questions:
+This shows/hides the locked (premium) questions in the problem lists.
 
-![Locked questions](docs/locked-questions.png)
+### Show Constraints
 
-### Show Result Count
-
-This displays a result count that is fixed in the bottom-left of the screen. This is handy to see a question count when filters have been added. For example, displaying all Todo questions, with all locked questions hidden,
-
-![Result Count](docs/result-count.png)
-
-### Show Solved Difficulty Counts
-
-This shows/hides the solved difficulty counts:
-
-![Solved Difficulty Counts](docs/solved-difficulty-counts.png)
+This shows/hides the Constraints section of a question's description.

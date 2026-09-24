@@ -1,13 +1,35 @@
-.side-bar-list > li:nth-child(2) > span:nth-child(2),
-.side-bar-list > li:nth-child(3) > span:nth-child(2),
-.side-bar-list > li:nth-child(4) > span:nth-child(2) {
-    opacity: 0;
+/* Difficulty label on a question page */
+html[data-lcc-hide~="difficulty"] [class*="text-difficulty-"] {
+    display: none !important;
 }
 
-#resultCountNode {
-    position: fixed;
-    left: 0em;
-    bottom: 0em;
-    background-color: #f5f5f5;
-    padding: 0.3em;
+/* Difficulty labels in problem lists (hidden rather than removed to keep the
+   row layout intact) */
+html[data-lcc-hide~="difficulty"] [class*="text-sd-easy"],
+html[data-lcc-hide~="difficulty"] [class*="text-sd-medium"],
+html[data-lcc-hide~="difficulty"] [class*="text-sd-hard"],
+html[data-lcc-hide~="difficulty"] [data-lcc="difficulty"] {
+    visibility: hidden !important;
+}
+
+/* Per-difficulty breakdowns (e.g. the Easy/Med./Hard solved counts on the
+   progress page), where the box order would give the difficulty away */
+html[data-lcc-hide~="difficulty"] div:has(> div > [class*="text-sd-easy"]):has(> div > [class*="text-sd-hard"]) {
+    display: none !important;
+}
+
+/* Acceptance rates in problem lists and below a question */
+html[data-lcc-hide~="acceptance"] a[href^="/problems/"] div[class*="w-[70px]"],
+html[data-lcc-hide~="acceptance"] [data-lcc="acceptance"] {
+    visibility: hidden !important;
+}
+
+/* Premium (locked) questions in problem lists */
+html[data-lcc-hide~="locked"] a[href^="/problems/"]:has(svg.fa-lock) {
+    display: none !important;
+}
+
+/* Constraints section of a question */
+html[data-lcc-hide~="constraints"] [data-lcc="constraints"] {
+    display: none !important;
 }

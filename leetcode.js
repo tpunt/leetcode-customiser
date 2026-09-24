@@ -1,194 +1,141 @@
-var options = {
-        announcement: false,
-        acceptanceRate: false,
+// Each option maps to a token in the data-lcc-hide attribute on <html> (an
+// attribute rather than a class, since LeetCode overwrites the class list).
+// When an option is false (i.e. the element should be hidden), its token is
+// added and leetcode.css hides the matching elements. Elements that cannot be
+// targeted by CSS alone are tagged with a data-lcc attribute by scan().
+var DEFAULTS = {
         difficulty: false,
+        acceptanceRate: false,
         lockedQuestions: false,
-        resultCountNode: true,
-        resultCount: 0,
-        solvedDifficultyCounts: false
+        constraints: false
     },
-    updateOptions = function (newOptions) {
-        if (options.announcement !== newOptions.announcement) {
-            toggleAnnouncement(newOptions.announcement);
-            options.announcement = newOptions.announcement;
-        }
-
-        if (options.acceptanceRate !== newOptions.acceptanceRate) {
-            toggleAcceptanceRate(newOptions.acceptanceRate);
-            options.acceptanceRate = newOptions.acceptanceRate;
-        }
-
-        if (options.difficulty !== newOptions.difficulty) {
-            toggleDifficulty(newOptions.difficulty);
-            options.difficulty = newOptions.difficulty;
-        }
-
-        if (options.lockedQuestions !== newOptions.lockedQuestions) {
-            toggleLockedQuestions(newOptions.lockedQuestions);
-            options.lockedQuestions = newOptions.lockedQuestions;
-        }
-
-        if (options.resultCountNode !== newOptions.resultCountNode) {
-            toggleResultCountNode(newOptions.resultCountNode);
-            options.resultCountNode = newOptions.resultCountNode;
-        }
-
-        if (options.solvedDifficultyCounts !== newOptions.solvedDifficultyCounts) {
-            toggleSolvedDifficultyCounts(newOptions.solvedDifficultyCounts);
-            options.solvedDifficultyCounts = newOptions.solvedDifficultyCounts;
-        }
+    HIDE_TOKENS = {
+        difficulty: 'difficulty',
+        acceptanceRate: 'acceptance',
+        lockedQuestions: 'locked',
+        constraints: 'constraints'
     },
-    toggleAnnouncement = function (show) {
-        var announcement = document.getElementById('announcement');
+    hideAttribute = '',
+    DIFFICULTY_TEXT = /^(Easy|Med\.|Medium|Hard)$/,
+    PERCENTAGE_TEXT = /^\d+(\.\d+)?%$/,
+    // Difficulty labels whose colour classes are too generic to hide with CSS
+    // alone (e.g. text-yellow), so their text is checked as well.
+    DIFFICULTY_CANDIDATES = [
+        '[class*="text-olive"]',
+        '[class*="text-yellow"]',
+        '[class*="text-pink"]',
+        '[class*="lc-green"]',
+        '[class*="lc-yellow"]',
+        '[class*="lc-red"]',
+        '[class*="difficulty"]',
+        '[class*="text-sd-easy"]',
+        '[class*="text-sd-medium"]',
+        '[class*="text-sd-hard"]'
+    ].join(','),
+    applyOptions = function (options) {
+        var opts = Object.assign({}, DEFAULTS, options);
 
-        if (announcement !== null) {
-            if (show) {
-                announcement.style = '';
-            } else {
-                announcement.style = 'display: none;';
-            }
+        hideAttribute = Object.keys(HIDE_TOKENS).filter(function (key) {
+            return !opts[key];
+        }).map(function (key) {
+            return HIDE_TOKENS[key];
+        }).join(' ');
+
+        ensureHideAttribute();
+    },
+    ensureHideAttribute = function () {
+        var root = document.documentElement;
+
+        if (root.getAttribute('data-lcc-hide') !== hideAttribute) {
+            root.setAttribute('data-lcc-hide', hideAttribute);
         }
     },
-    toggleAcceptanceRate = function (show) {
-        var acceptanceRates = document.querySelectorAll('.reactable-data > tr > td:nth-child(5)'),
-        rates = document.getElementsByClassName('css-jkjiwi');
-
-        if (show) {
-            for (var i = 0; i < acceptanceRates.length; ++i) {
-                acceptanceRates[i].style = '';
-            }
-
-            if (rates !== null) {
-              for(let i = 0; i < rates.length; i++) {
-                rates[i].style = 'opacity: 100;';
-              }
-            }
-        } else {
-            for (var i = 0; i < acceptanceRates.length; ++i) {
-                acceptanceRates[i].style = 'opacity: 0;';
-            }
-
-            if (rates !== null) {
-              for(let i = 0; i < rates.length; i++) {
-                rates[i].style = 'opacity: 0;';
-              }
-            }
+    mark = function (el, type) {
+        if (el && !el.hasAttribute('data-lcc')) {
+            el.setAttribute('data-lcc', type);
         }
     },
-    toggleDifficulty = function (show) {
-        var difficulties = document.querySelectorAll('.reactable-data > tr > td:nth-child(6)'),
-            difficulty = document.querySelector('[diff]');
-
-        if (show) {
-            for (var i = 0; i < difficulties.length; ++i) {
-                difficulties[i].style = '';
+    markDifficulties = function () {
+        document.querySelectorAll(DIFFICULTY_CANDIDATES).forEach(function (el) {
+            if (el.childElementCount === 0 && DIFFICULTY_TEXT.test(el.textContent.trim())) {
+                mark(el, 'difficulty');
             }
-
-            if (difficulty !== null) {
-                difficulty.style = 'display: block;';
-            }
-        } else {
-            for (var i = 0; i < difficulties.length; ++i) {
-                difficulties[i].style = 'opacity: 0;';
-            }
-
-            if (difficulty !== null) {
-                difficulty.style = 'display: none;';
-            }
-        }
+        });
     },
-    toggleLockedQuestions = function (show) {
-        var qlt = document.querySelector('.question-list-table');
+    markAcceptanceRates = function () {
+        // Problem lists (problemset page and the problem list drawer)
+        document.querySelectorAll('a[href^="/problems/"] div').forEach(function (el) {
+            if (el.childElementCount === 0 && PERCENTAGE_TEXT.test(el.textContent.trim())) {
+                mark(el, 'acceptance');
+            }
+        });
 
-        if (qlt) {
-            var tbody = qlt.children[0].children[1],
-                rows = tbody.children;
+        // "Accepted x / y | Acceptance Rate z%" stats below a question
+        document.querySelectorAll('div.text-sd-muted-foreground').forEach(function (el) {
+            if (el.childElementCount === 0 && el.textContent.trim() === 'Acceptance Rate') {
+                mark(el.closest('.flex-wrap') || el.parentElement, 'acceptance');
+            }
+        });
+    },
+    markConstraints = function () {
+        document.querySelectorAll('[data-track-load="description_content"] p > strong').forEach(function (strong) {
+            var p = strong.parentElement,
+                el;
 
-            options.resultCount = rows.length;
+            if (!/^Constraints:?$/.test(strong.textContent.trim())) {
+                return;
+            }
 
-            for (var i = 0, j = 1; i < rows.length; ++i) {
-                var col = rows[i].children[2].children[0].children[1];
+            mark(p, 'constraints');
 
-                if (show) {
-                    rows[i].style = '';
-                } else {
-                    rows[i].style = j & 1 ? 'background-color: #f5f5f5;' : 'background-color: transparent;';
-
-                    if (col !== undefined && col.children[0] !== undefined) {
-                        rows[i].style = 'display: none;'; // removing elements breaks LCs JS...
-                        --options.resultCount;
-                    } else {
-                        ++j;
-                    }
+            // Hide everything up to the next blank paragraph or next heading
+            // (e.g. "Follow-up:").
+            for (el = p.nextElementSibling; el; el = el.nextElementSibling) {
+                if (el.tagName === 'P' && (el.textContent.trim() === '' || el.querySelector('strong'))) {
+                    break;
                 }
-            }
-
-            toggleResultCountNode(options.resultCountNode);
-        }
-    },
-    toggleResultCountNode = function (show) {
-        var resultCountNode = document.getElementById('resultCountNode');
-
-        if (resultCountNode) {
-            if (show) {
-                resultCountNode.style = '';
-                resultCountNode.innerHTML = options.resultCount;
-            } else {
-                resultCountNode.style = 'display: none;';
-            }
-        }
-    },
-    toggleSolvedDifficultyCounts = function (show) {
-        var welcome = document.querySelector('#welcome > span');
-
-        if (welcome) {
-            if (show) {
-                for (var i = 1; i < welcome.children.length; ++i) {
-                    welcome.children[i].style = '';
+                if (el.tagName === 'STRONG') {
+                    break;
                 }
-                welcome.style = '';
-            } else {
-                for (var i = 1; i < welcome.children.length; ++i) {
-                    welcome.children[i].style = 'display: none;';
-                }
-                welcome.style = 'color: #fff;';
+                mark(el, 'constraints');
             }
-        }
+        });
     },
-    qaEvent = function () {
-        toggleAnnouncement(options.announcement);
-        toggleAcceptanceRate(options.acceptanceRate);
-        toggleDifficulty(options.difficulty);
-        toggleLockedQuestions(options.lockedQuestions);
-        toggleResultCountNode(options.resultCountNode);
-        toggleSolvedDifficultyCounts(options.solvedDifficultyCounts);
+    scan = function () {
+        ensureHideAttribute();
+        markDifficulties();
+        markAcceptanceRates();
+        markConstraints();
+    },
+    scanScheduled = false,
+    scheduleScan = function () {
+        if (!scanScheduled) {
+            scanScheduled = true;
+            requestAnimationFrame(function () {
+                scanScheduled = false;
+                scan();
+            });
+        }
     };
 
-document.addEventListener('DOMContentLoaded', function (e) {
-    var qa = document.getElementById('question-app'),
-        app = document.getElementById('app'),
-        mo = new MutationObserver(qaEvent);
+// Hide everything straight away (before the stored options load) so that
+// nothing flashes up on page load.
+applyOptions(DEFAULTS);
 
-    if (qa !== null) {
-        mo.observe(qa, {childList: true, subtree: true});
-        resultCountNode = document.createElement('div');
-        resultCountNode.setAttribute('id', 'resultCountNode');
-        document.body.appendChild(resultCountNode);
-    }
-
-    if (app !== null) {
-      mo.observe(app, {childList: true, subtree: true});
-    }
-
-    chrome.storage.sync.get('lc_options', (opts) => {
-        if (opts['lc_options'] === undefined) {
-            chrome.storage.sync.set({lc_options: opts});
-        } else {
-            updateOptions(opts['lc_options']);
-        }
-    });
+chrome.storage.sync.get('lc_options', function (items) {
+    applyOptions(items.lc_options);
 });
 
-chrome.extension.onMessage.addListener(function(options, sender, object, sendResponse) {
-    updateOptions(options);
+chrome.storage.onChanged.addListener(function (changes, area) {
+    if (area === 'sync' && changes.lc_options) {
+        applyOptions(changes.lc_options.newValue);
+    }
+});
+
+new MutationObserver(scheduleScan).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+    attributeFilter: ['data-lcc-hide']
 });

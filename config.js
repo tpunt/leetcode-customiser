@@ -1,47 +1,31 @@
+var DEFAULTS = {
+    difficulty: false,
+    acceptanceRate: false,
+    lockedQuestions: false,
+    constraints: false
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     var container = document.getElementById('container'),
-        announcement = document.getElementById('announcement'),
-        acceptanceRate = document.getElementById('acceptanceRate'),
-        difficulty = document.getElementById('difficulty'),
-        lockedQuestions = document.getElementById('lockedQuestions');
+        keys = Object.keys(DEFAULTS);
 
-    chrome.storage.sync.get('lc_options', (options) => {
-        var opts = options['lc_options'];
+    chrome.storage.sync.get('lc_options', (items) => {
+        var opts = Object.assign({}, DEFAULTS, items.lc_options);
 
-        if (opts === undefined) {
-            opts = {
-                announcement: false,
-                acceptanceRate: false,
-                difficulty: false,
-                lockedQuestions: false,
-                resultCountNode: true,
-                resultCount: 0,
-                solvedDifficultyCounts: false
-            };
-            chrome.storage.sync.set({lc_options: opts});
-        }
-
-        announcement.checked = opts.announcement;
-        acceptanceRate.checked = opts.acceptanceRate;
-        difficulty.checked = opts.difficulty;
-        lockedQuestions.checked = opts.lockedQuestions;
-        resultCountNode.checked = opts.resultCountNode;
-        solvedDifficultyCounts.checked = opts.solvedDifficultyCounts;
+        keys.forEach((key) => {
+            document.getElementById(key).checked = opts[key];
+        });
     });
 
+    // The content script listens for storage changes, so saving is enough to
+    // update any open LeetCode tabs.
     container.addEventListener('change', () => {
-        var options = {
-            announcement: announcement.checked,
-            acceptanceRate: acceptanceRate.checked,
-            difficulty: difficulty.checked,
-            lockedQuestions: lockedQuestions.checked,
-            resultCountNode: resultCountNode.checked,
-            solvedDifficultyCounts: solvedDifficultyCounts.checked
-        };
+        var options = {};
 
-        chrome.tabs.getSelected(null, function(tab) {
-            chrome.tabs.sendMessage(tab.id, options, null, null);
+        keys.forEach((key) => {
+            options[key] = document.getElementById(key).checked;
         });
+
         chrome.storage.sync.set({lc_options: options});
     });
 });
